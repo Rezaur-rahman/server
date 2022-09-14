@@ -24,11 +24,7 @@ async function run(){
         const userCollection = database.collection('users');
 
         app.post('/products',async(req,res)=>{
-      
-            const productInfo=req.body;
-
-            console.log(productInfo);
-           
+            const productInfo=req.body;           
             const result=await productsCollection.insertOne(productInfo);
             res.json(result)
         })
@@ -38,6 +34,15 @@ async function run(){
             const result=await cursor.toArray();
             res.send(result);
         })
+
+        app.delete('/products',async(req,res)=>{
+          const productId=req.body.productId;
+          console.log(productId);
+          const query={_id:ObjectId(productId)};
+          const result=await productsCollection.deleteOne(query);
+          res.json(result);
+
+       })
 
         app.get('/products/:id',async(req,res)=>{
             const keys=req.params.id;
@@ -50,7 +55,6 @@ async function run(){
           app.put('/products/:id', async (req, res) => {
             const key=req.params.id;
             const rating = req.body;
-          console.log(rating);
             const filter = { _id: ObjectId(key) };
             const options = { upsert: true };
             const updateDoc = { $set: rating };
@@ -61,7 +65,6 @@ async function run(){
         app.post('/orders',async(req,res)=>{
       
             const orderInfo=req.body; 
-           console.log(orderInfo);
             const result=await orderCollection.insertOne(orderInfo);
             res.json(result)
         })
@@ -82,7 +85,6 @@ async function run(){
 
         app.get('/myorders',async(req,res)=>{
             const email=req.query.email;
-            console.log(email);
             const query={email:email};
             const cursor=orderCollection.find(query);
             const result=await cursor.toArray();
