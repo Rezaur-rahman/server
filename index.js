@@ -24,7 +24,8 @@ async function run(){
         const userCollection = database.collection('users');
 
         app.post('/products',async(req,res)=>{
-            const productInfo=req.body;           
+            const productInfo=req.body;    
+            console.log(productInfo);       
             const result=await productsCollection.insertOne(productInfo);
             res.json(result)
         })
