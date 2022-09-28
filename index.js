@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId, Logger } = require('mongodb');
 const fileUpload=require('express-fileupload');
 
 
-const uri = "mongodb+srv://farmfood:PluV5iK9DAj8k0hK@cluster0.ofdnr.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://reza:rezaurrahman@cluster0.lqlizfj.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
@@ -55,13 +55,15 @@ async function run(){
 
           app.put('/products/:id', async (req, res) => {
             const key=req.params.id;
-            const rating = req.body;
+            console.log(key);
             const filter = { _id: ObjectId(key) };
             const options = { upsert: true };
             const updateDoc = { $set: rating };
-            const result = await productsCollection.updateOne(filter, updateDoc, options);
+            // const result = await productsCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         });
+
+       
 
         app.post('/orders',async(req,res)=>{
       
@@ -101,6 +103,7 @@ async function run(){
 
           app.put('/users', async (req, res) => {
             const user = req.body;
+            console.log(user);
             const filter = { email: user.email };
             const options = { upsert: true };
             const updateDoc = { $set: user };
@@ -116,16 +119,28 @@ async function run(){
       })
 
 
-        app.get('/users/:email',async(req,res)=>{
-            const email=req.params.email;
-            const query={email:email};
-            const user=await userCollection.findOne(query);
-            let isAdmin=false;
-            if(user?.role==='admin'){
-              isAdmin=true;
-            }
-            res.json({admin:isAdmin});
-          });
+      app.get('/users/:email',async(req,res)=>{
+        const email=req.params.email;
+        const query={email:email};
+        const user=await userCollection.findOne(query);
+        let isAdmin=false;
+        let isseller=false;
+        if(user?.role==='admin'){
+          isAdmin=true;
+        }
+        else if(user?.role==='seller'){
+          isseller=true;
+        }
+       if(isAdmin){
+        res.json({admin:isAdmin});
+       }
+       else if( isseller){
+        res.json({seller:isseller});
+       }
+       else{
+        res.json({user:true})
+       }
+      })
     }
 finally {
     // await client.close();
